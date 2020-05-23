@@ -8,9 +8,12 @@
     <title>Insert title here</title>
     <style>
         table {
+            align-content: center;
+            bgcolor: aqua;
             font-family: arial, sans-serif;
             border-collapse: collapse;
-            width: 100%;
+            width: 80%;
+            border-color: darkslateblue;
         }
         td, th {
             border: 1px solid #dddddd;
@@ -22,21 +25,25 @@
         }
     </style>
 </head>
-<body>
-<table>
+
+<body bgcolor="#f0e68c">
+
+<h2 style="text-align: center"><a href="/add-new-order">Add new order</a></h2>
+<table align="center" bgcolor="aqua">
     <tr>
         <th>Title</th>
         <th>Price</th>
+        <th>Order number</th>
         <th>Action</th>
     </tr>
     <c:forEach var="order" items="${orderList}">
         <tr>
             <td>${order.title}</td>
             <td>${order.price}</td>
+            <td>${order.id}</td>
             <td><a href="/delete/${order.id}">Delete this item</a></td>
         </tr>
     </c:forEach>
 </table>
-<a href="/add-new-order">Add new order</a>
 </body>
 </html>

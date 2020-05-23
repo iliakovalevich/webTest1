@@ -1,40 +1,41 @@
 package org.example.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.example.domain.Order;
-import org.example.repository.OrderRepository;
-import org.example.repository.OrderRepositoryImpl;
+import org.example.repository.ReadFromDataBase;
 
 public class OrderServiceImpl implements OrderService {
 
-  private OrderRepositoryImpl orderRepository = new OrderRepositoryImpl();
+    private ReadFromDataBase readFromDataBase = new ReadFromDataBase();
 
-  public void save(Order order) {
-    if (order != null) {
-      List<Order> orders = orderRepository.getAll();
-      if (!orders.isEmpty()) {
-        Order lastOrder = orders.get(orders.size() - 1);
-        order.setId(lastOrder.getId() + 1);
-        orderRepository.save(order);
-      }
+    public void save(Order order) {
+        readFromDataBase.save(order);
     }
-  }
 
-  public void delete(Order order) {
-    if (order != null) {
-      orderRepository.delete(order);
+    public void delete(int id) {
+        readFromDataBase.delete(id);
     }
-  }
 
-  public List<Order> getAll() {
-    return orderRepository.getAll();
-  }
-
-  public Order getById(Integer id) {
-    if (id != null) {
-      return orderRepository.getById(id);
+    public void addItemFromMenu(int id){
+        String sql = "SELECT id, title, price FROM shop.menu WHERE id = "+id;
+        readFromDataBase.save(readFromDataBase.getFromMenuOrder(sql));
     }
-    return null;
-  }
+
+    public List<Order> getAll() {
+        ReadFromDataBase readFromDataBase = new ReadFromDataBase();
+        List<Order> orders = new ArrayList<Order>();
+        orders.addAll(readFromDataBase.getAll("SELECT * FROM shop.order"));
+        return orders;
+    }
+
+    public List<Order> getMenu() {
+        ReadFromDataBase readFromDataBase = new ReadFromDataBase();
+        List<Order> menus = new ArrayList<Order>();
+        menus.addAll(readFromDataBase.getAll("SELECT * FROM shop.menu"));
+        return menus;
+    }
 }
+
+

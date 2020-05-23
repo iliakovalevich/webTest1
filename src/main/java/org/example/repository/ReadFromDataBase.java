@@ -1,5 +1,7 @@
 package org.example.repository;
 
+import org.example.domain.Order;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,74 +13,81 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class ReadFromDataBase {
-  private static final String PROPERTIES_DATA_BASE = "database.properties";
-  private static final String SQL_SELECT_HoroscopeForecast = "SELECT DISTINCT Forecasts FROM HoroscopeForecast";
-  private static final String SQL_SELECT_FORECAST  = "SELECT DISTINCT Forecasts FROM WeatherForecast";
+    public void save(Order order) {
+        try (Connection connection = dataBaseConnection()) {
+            String sql = "INSERT INTO shop.order (title, price) Values (?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, order.getTitle());
+            preparedStatement.setDouble(2, order.getPrice());
+            preparedStatement.executeUpdate();
+            connection.close();
+        } catch (SQLException ex) {
+            ex.getErrorCode();
+        }
+    }
 
-  public List<String> readHoroscopeForecasts() {
-    List<String> forecastsList = new ArrayList<>();
-    try (Connection conn = getConnection()) {
-      Statement statement = Objects.requireNonNull(conn).createStatement();
-      ResultSet resultSet =
-          statement.executeQuery(SQL_SELECT_HoroscopeForecast);
-      while (resultSet.next()) {
-        forecastsList.add(resultSet.getString("Forecasts"));
-      }
-      return forecastsList;
+    public void delete(int id) {
+        try (Connection connection = dataBaseConnection()) {
+            Statement statement = connection.createStatement();
+            String sql = "DELETE FROM shop.order WHERE id = " + id;
+            statement.executeUpdate(sql);
+            connection.close();
+        } catch (SQLException ex) {
+            ex.getErrorCode();
+        }
 
-    } catch (Exception ex) {
-      System.out.println(ex);
     }
-    return null;
-  }
 
-  public List<String> readWeatherForecasts() {
-    List<String> forecastsList = new ArrayList<>();
-    try (Connection conn = getConnection()) {
-      Statement statement = Objects.requireNonNull(conn).createStatement();
-      ResultSet resultSet =
-          statement.executeQuery(SQL_SELECT_FORECAST);
-      while (resultSet.next()) {
-        forecastsList.add(resultSet.getString("Forecasts"));
-      }
-      return forecastsList;
-    } catch (Exception ex) {
-      System.out.println(ex);
+    public Order getFromMenuOrder(String sql) {
+        Order order=new Order();
+        try (Connection connection = dataBaseConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            order.setId(resultSet.getInt("id"));
+            order.setTitle(resultSet.getString("title"));
+            order.setPrice(resultSet.getDouble("price"));
+            return order;
+        } catch (SQLException ex) {
+            ex.getErrorCode();
+        }
+        return order;
     }
-    return null;
-  }
 
-  private Connection getConnection() {
-    try {
-      Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-    } catch (Exception ex) {
-      System.out.println(ex);
+    public List<Order> getAll(String sql) {
+        List<Order> orders = new ArrayList<>();
+        try {
+            try (Connection connection = dataBaseConnection()) {
+                Statement statement = Objects.requireNonNull(connection).createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    Order order = new Order();
+                    order.setId(resultSet.getInt("id"));
+                    order.setTitle(resultSet.getString("title"));
+                    order.setPrice(resultSet.getDouble("price"));
+                    orders.add(order);
+                }
+                connection.close();
+                return orders;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    File file = getFileFromResources(PROPERTIES_DATA_BASE);
-    Properties properties = new Properties();
-    try {
-      properties.load(new FileReader(file));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    String url = properties.getProperty("url");
-    String username = properties.getProperty("username");
-    String password = properties.getProperty("password");
-    try {
-      return DriverManager.getConnection(url, username, password);
-    } catch (SQLException throwables) {
-      throwables.printStackTrace();
-    }
-    return null;
-  }
 
-  public File getFileFromResources(String fileName) {
-    ClassLoader classLoader = ReadFromDataBase.class.getClassLoader();
-    URL resource = classLoader.getResource(fileName);
-    if (resource == null) {
-      throw new IllegalArgumentException("file is not found!");
-    } else {
-      return new File(resource.getFile());
+    public Connection dataBaseConnection() {
+        try {
+            String url = "jdbc:mysql://localhost/shop?serverTimezone=Europe/Moscow&useSSL=false";
+            String username = "root";
+            String password = "10033223391";
+            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
+            try (Connection conn = DriverManager.getConnection(url, username, password)) {
+                return DriverManager.getConnection(url, username, password);
+            }
+        } catch (Exception ex) {
+        }
+        return null;
     }
-  }
+
 }
+
