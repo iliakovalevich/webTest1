@@ -6,8 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="SpringMvcTest" />
         <module name="webTest1test" />
+        <module name="webTest1" />
+        <module name="SpringMvcTest" />
       </profile>
     </annotationProcessing>
   </component>

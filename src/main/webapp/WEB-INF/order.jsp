@@ -28,7 +28,7 @@
 
 <body bgcolor="#f0e68c">
 
-<h2 style="text-align: center"><a href="/add-new-order">Add new order</a></h2>
+<h2 style="text-align: center"><a href="<c:url value="/add-new-order"/>">Add new order</a></h2>
 <table align="center" bgcolor="aqua">
     <tr>
         <th>Title</th>

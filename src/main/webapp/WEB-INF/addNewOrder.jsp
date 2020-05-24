@@ -26,7 +26,7 @@
     </style>
 </head>
 <body bgcolor="#f0e68c">
-<form action="/add-new-order" method="POST">
+<form action="<c:url value="/add-new-order"/>" method="POST">
     <label>Title</label>
     <input type="text" name="title">
     <label>Price</label>
@@ -34,7 +34,7 @@
     <input type="submit" value="Add new order">
 </form>
 <br><br>
-<form action="/add-new-order" method="POST">
+<form action="<c:url value="/add-new-order"/>" method="POST">
 <h2 style="text-align: center">Menu</h2>
     <table align="center" bgcolor="aqua">
         <tr>
